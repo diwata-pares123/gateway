@@ -1,15 +1,13 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Req } from '@nestjs/common';
+import { PaymentService } from './payment.service';
 
 @Controller('api/payment')
 export class PaymentController {
-  @Post('checkout')
-  dummyCheckout(@Body() body: any) {
+  constructor(private readonly paymentService: PaymentService) {}
 
-    return {
-      success: true,
-      transactionId: 'txn_dummy_12345',
-      message: 'Mock payment successful! Walang totoong pera na binawas.',
-      status: 'PAID'
-    };
+  @Post('checkout')
+  async checkout(@Body() body: any, @Req() req: any) {
+    // Idempotency check logic is handled by your Interceptor!
+    return await this.paymentService.processCheckout(body);
   }
 }
